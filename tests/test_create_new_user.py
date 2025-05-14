@@ -1,29 +1,36 @@
 import pytest
-import uuid
 
-@pytest.mark.parametrize("first_name, last_name", [("Test", "User")])
-def test_create_user_valid(page, first_name, last_name):
-    unique_email = f"{first_name.lower()}.{last_name.lower()}.{uuid.uuid4().hex[:6]}@example.com"
+def test_create_user_valid(page, test_identity):
+    first_name = test_identity["first_name"]
+    last_name = test_identity["last_name"]
+    unique_email = test_identity["email"]
 
-    # Click the "Add User" button
-    # id="button-addNewUser"
-    page.click("text='Add User'")
+    # Click "Add User"
+    page.click("#button-addNewUser")
 
-    # Fill out the Add User form
-    page.fill("input[id='textfield-adduser-firstname']", first_name)
-    page.fill("input[id='textfield-adduser-lastname']", last_name)
-    page.fill("input[id='textfield-adduser-email']", unique_email)
+    # Fill out the user form
+    page.fill("#textfield-adduser-firstname", first_name)
+    page.fill("#textfield-adduser-lastname", last_name)
+    page.fill("#textfield-adduser-email", unique_email)
 
-    # Click the Save button
-    # id="button-adduser-submit"
-    page.click("button:has-text('Save')")
-
-    # Confirm drawer closes and success message appears
-    # Toastify toaster notfication
-    # I think the id="top-center" ?
+    # Submit
+    page.click("#button-adduser-submit")
     page.wait_for_selector("text='User added successfully'", timeout=5000)
 
-    # Optional: verify the new user appears at the top of the list
-    page.wait_for_timeout(1000)
-    row_selector = f"text='{first_name} {last_name}'"
-    assert page.is_visible(row_selector), "New user row not found in list"
+    # Find correct row
+    row = page.locator(f"table#virtualTable tbody tr:has-text('{unique_email}')").first
+
+    # First, Last name check
+    name_cell = row.locator("[data-testid='user-name-in-list']")
+    assert name_cell.inner_text().strip() == f"{first_name} {last_name}", "Name does not match"
+
+    # Status check
+    assert row.locator("text='Pending'").is_visible(), "Status is not 'Pending'"
+
+    # Email check
+    assert row.locator(f"text='{unique_email}'").is_visible(), "Email not found in row"
+
+    # Optional fields check
+    empty_cells = row.locator("td.text-center, td.custom-width").all()
+    empty_texts = [cell.inner_text().strip() for cell in empty_cells]
+    assert any(e == "" for e in empty_texts), "Expected one or more blank optional fields"
