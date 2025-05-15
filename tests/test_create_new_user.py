@@ -1,5 +1,6 @@
 import pytest
 
+# CREATE
 @pytest.mark.order(1)
 def test_create_user_valid(page, test_identity):
     first_name = test_identity["first_name"]
