@@ -2,6 +2,7 @@ import pytest
 
 @pytest.mark.order(4)
 def test_suspend_user(page, test_identity):
+    """Suspends an existing user and confirms the status updates correctly in the UI."""
     email = test_identity["email"]
 
     # Locate the user row by email
@@ -31,4 +32,3 @@ def test_suspend_user(page, test_identity):
 
     # Verify status has changed to "Suspended", retry for a few seconds to allow UI update
     page.wait_for_selector(f"table#virtualTable tbody tr:has-text('{email}') td:has-text('Suspended')", timeout=5000)
-
