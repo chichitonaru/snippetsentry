@@ -3,6 +3,7 @@ import pytest
 # DELETE
 @pytest.mark.order(5)
 def test_delete_user(page, test_identity):
+    """Deletes a user and ensures they no longer appear in the user list afterward."""
     email = test_identity["email"]
 
     # Locate the user row by email
