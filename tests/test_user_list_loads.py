@@ -3,6 +3,7 @@ import pytest
 # READ
 @pytest.mark.order(2)
 def test_user_list_loads_successfully(page, test_identity):
+    """Validates that the user list loads automatically and displays accurate user information."""
     # Sanity check: confirm user list and Add User button is present
     assert page.locator("text='Add User'").is_visible()
 

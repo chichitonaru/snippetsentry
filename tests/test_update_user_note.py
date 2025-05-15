@@ -4,6 +4,7 @@ import uuid
 # UPDATE
 @pytest.mark.order(3)
 def test_update_user_note(page, test_identity):
+    """Updates the note field for an existing user and verifies persistence after saving."""
     email = test_identity["email"]
     test_note = f"Autotest Note {uuid.uuid4().hex[:4]}"
 
